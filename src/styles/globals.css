@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Titillium Web', sans-serif;
+  min-height: 100%;
+}
+
+.loader {
+	border-top-color: #60A5FA;
+	-webkit-animation: spinner 1.5s linear infinite;
+	animation: spinner 1.5s linear infinite;
+}
+
+@keyframes spinner {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
