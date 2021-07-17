@@ -1,13 +1,13 @@
 <p align="center">
-  <a href="#-Introdução">Introdução</a>
+  <a href="#Introdução">Introdução</a>
   &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-  <a href="#-Tecnologias-e-Ferramentas">Tecnologias</a>
+  <a href="#Tecnologias-e-Ferramentas">Tecnologias</a>
   &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-  <a href="#-Estrutura">Estrutura</a>
+  <a href="#Estrutura">Estrutura</a>
   &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-  <a href="#-Instalação/Execução">Instalação</a>
+  <a href="#Instalação">Instalação</a>
   &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-  <a href="#-Comentários-Adicionais">Comentários Adicionais</a>
+  <a href="#Comentários-Adicionais">Comentários Adicionais</a>
   &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 </p>
 
@@ -68,13 +68,15 @@ services          #Arquivos que importam os serviços
 
 styles            #Arquivos de estilo
 
+tests             #Arquivos de testes e mocks
+
 types             #Tipagens que são usadas em mais de um componente
 
 utils             #Funções úteis e reaproveitáveis para chamar em
                   qualquer lugar da aplicação
 ```
 
-# Instalação/Execução
+# Instalação
 
 1 - Clone o projeto;
 
