@@ -9,7 +9,7 @@ const LoadingContext = createContext<LoadingContextData>(
 );
 
 export function LoadingProvider({ children }: LoadingProviderProps) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const startLoading = useCallback(() => {
     setIsLoading(true);

@@ -1,5 +1,6 @@
 import { ReactElement } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 type NavItemProps = {
   icon: ReactElement;
@@ -8,8 +9,25 @@ type NavItemProps = {
 };
 
 export function NavItem({ icon, title, link }: NavItemProps) {
+  const { asPath } = useRouter();
+
+  let isActive = false;
+
+  if (asPath === link) {
+    isActive = true;
+  }
+
+  if (isActive) {
+    return (
+      <li className="flex items-center text-yellow-300 justify-center gap-1 text-lg translate-x-0 transition color duration-200 lg:text-xl">
+        {icon}
+        <Link href={link}>{title}</Link>
+      </li>
+    );
+  }
+
   return (
-    <li className="flex items-center justify-center gap-1 text-lg transform transition transform duration-200 hover:translate-x-2 lg:text-xl">
+    <li className="flex items-center justify-center gap-1 text-lg translate-x-0 transition color duration-200 hover:text-yellow-100 lg:text-xl">
       {icon}
       <Link href={link}>{title}</Link>
     </li>

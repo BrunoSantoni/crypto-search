@@ -1,6 +1,7 @@
 import { parseCookies } from 'nookies';
+import { CryptoData } from 'types/Crypto';
 
-export function getCookies(cookieKey: string) {
+export function getCookies(cookieKey: string): CryptoData[] | null {
   const cookies = parseCookies();
 
   if (!cookies[cookieKey]) {

@@ -1,12 +1,12 @@
 import { ChangeEvent, useState } from 'react';
-import { MdSearch } from 'react-icons/md';
 import { CryptoData } from 'types/Crypto';
 
-import { parseCookies, setCookie } from 'nookies';
+import { setCookie } from 'nookies';
 import { useLoading } from 'hooks/useLoading';
 import { useEffect } from 'react';
 import { api } from 'services/api';
 import { showToastMessage } from 'utils/showToastMessage';
+import { getCookies } from 'utils/getCookies';
 
 export function Search() {
   const [filteredCryptos, setFilteredCryptos] = useState<CryptoData[]>([]);
@@ -17,27 +17,33 @@ export function Search() {
     async function getData() {
       startLoading();
 
-      const { data } = await api.get('/data/all/coinlist?summary=true');
+      try {
+        const { data } = await api.get('/data/all/coinlist?summary=true');
 
-      const responseData = data.Data;
+        const responseData = data.Data;
 
-      const responseKeys = Object.keys(responseData);
+        const responseKeys = Object.keys(responseData);
 
-      const cryptoData = responseKeys.map((key) => {
-        return {
-          id: responseData[key].Id,
-          name: responseData[key].FullName,
-          symbol: responseData[key].Symbol,
-          image: responseData[key].ImageUrl
-            ? `https://www.cryptocompare.com/${responseData[key].ImageUrl}`
-            : '/img/no-img.jpg',
-        };
-      });
-
-      setCryptos(cryptoData);
-      setFilteredCryptos(cryptos.slice(0, 12));
-
-      finishLoading();
+        const cryptoData = responseKeys.map((key) => {
+          return {
+            id: responseData[key].Id,
+            name: responseData[key].FullName,
+            symbol: responseData[key].Symbol,
+            image: responseData[key].ImageUrl
+              ? `https://www.cryptocompare.com/${responseData[key].ImageUrl}`
+              : '/img/no-img.jpg',
+          };
+        });
+        setCryptos(cryptoData);
+        setFilteredCryptos(cryptoData.slice(0, 12));
+      } catch (err) {
+        showToastMessage({
+          message: 'An Network error occurred, please try again',
+          type: 'error',
+        });
+      } finally {
+        finishLoading();
+      }
     }
 
     getData();
@@ -61,9 +67,10 @@ export function Search() {
 
   function handleAddCrypto(filteredCrypto: CryptoData) {
     let newCryptoInfo = [];
-    const { 'crypto-search@cryptos': cryptosCookies } = parseCookies();
 
-    if (!cryptosCookies) {
+    const cryptosOnCookies = getCookies('crypto-search@cryptos');
+
+    if (!cryptosOnCookies || cryptosOnCookies.length <= 0) {
       newCryptoInfo = [filteredCrypto];
 
       showToastMessage({
@@ -71,10 +78,8 @@ export function Search() {
         message: 'Crypto added to tracking',
       });
     } else {
-      const parsedCookies: CryptoData[] = JSON.parse(cryptosCookies);
-
-      const alreadySaved = parsedCookies.find(
-        (cryptoOnCookie) => cryptoOnCookie.id === filteredCrypto.id,
+      const alreadySaved = cryptosOnCookies.find(
+        (crypto) => crypto.id === filteredCrypto.id,
       );
 
       if (alreadySaved) {
@@ -85,7 +90,7 @@ export function Search() {
 
         return;
       }
-      newCryptoInfo = [...parsedCookies, filteredCrypto];
+      newCryptoInfo = [...cryptosOnCookies, filteredCrypto];
 
       showToastMessage({
         type: 'success',
@@ -107,7 +112,7 @@ export function Search() {
     return (
       <section className="flex-1 p-4 flex justify-center items-center flex-col">
         <div className="loader ease-linear rounded-full border-4 h-12 w-12"></div>
-        <p className="mt-4">Carregando...</p>
+        <p className="mt-4">Loading...</p>
       </section>
     );
   }

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { parseCookies, setCookie } from 'nookies';
-import { CryptoData } from 'types/Crypto';
+import { setCookie } from 'nookies';
 import { api } from 'services/api';
 import { monetaryValue } from 'utils/monetaryValue';
 import { percentageValue } from 'utils/percentageValue';
@@ -32,64 +31,66 @@ export function Dashboard() {
 
   async function getApiData() {
     startLoading();
-    setFavoriteCryptos([]);
 
-    // const cryptosCookies = getCookies('crypto-search@cryptos');
+    try {
+      setFavoriteCryptos([]);
 
-    const { 'crypto-search@cryptos': cryptosCookies } = parseCookies();
+      const cryptosOnCookies = getCookies('crypto-search@cryptos');
 
-    if (!cryptosCookies) {
-      setTimeout(() => finishLoading(), 1000);
+      if (!cryptosOnCookies || cryptosOnCookies.length <= 0) {
+        setTimeout(() => finishLoading(), 1000);
 
-      return;
-    }
+        return;
+      }
 
-    const parsedCryptos: CryptoData[] = JSON.parse(cryptosCookies);
+      const cryptosSymbols = cryptosOnCookies.map((crypto) => crypto.symbol);
 
-    if (parsedCryptos.length <= 0) {
-      setTimeout(() => finishLoading(), 1000);
-      return;
-    }
-
-    const cryptosSymbols = parsedCryptos.map((crypto) => crypto.symbol);
-
-    const { data } = await api.get(
-      `data/pricemultifull?fsyms=${cryptosSymbols.join(',')}&tsyms=BRL`,
-    );
-
-    const allCryptos = data.RAW;
-
-    const responseKeys = Object.keys(allCryptos);
-    const cryptoData = responseKeys.map((key) => {
-      const cryptoName = parsedCryptos.find(
-        (parsedCrypto) => parsedCrypto.symbol === key,
+      const { data } = await api.get(
+        `data/pricemultifull?fsyms=${cryptosSymbols.join(',')}&tsyms=BRL`,
       );
 
-      return {
-        name: cryptoName?.name,
-        price: allCryptos[key].BRL.PRICE,
-        variation: allCryptos[key].BRL.CHANGEDAY,
-        variationPercentage: allCryptos[key].BRL.CHANGEPCTDAY,
-        image: allCryptos[key].BRL.IMAGEURL
-          ? `https://www.cryptocompare.com/${allCryptos[key].BRL.IMAGEURL}`
-          : '/img/no-img.jpg',
-      };
-    });
+      const allCryptos = data.RAW;
 
-    setFavoriteCryptos(cryptoData);
-    setTimeout(() => finishLoading(), 1000);
+      if (!allCryptos) {
+        setTimeout(() => finishLoading(), 1000);
+
+        return;
+      }
+
+      const responseKeys = Object.keys(allCryptos);
+      const cryptoData = responseKeys.map((key) => {
+        const cryptoName = cryptosOnCookies.find(
+          (crypto) => crypto.symbol === key,
+        );
+
+        return {
+          name: cryptoName?.name,
+          price: allCryptos[key].BRL.PRICE,
+          variation: allCryptos[key].BRL.CHANGEDAY,
+          variationPercentage: allCryptos[key].BRL.CHANGEPCTDAY,
+          image: allCryptos[key].BRL.IMAGEURL
+            ? `https://www.cryptocompare.com/${allCryptos[key].BRL.IMAGEURL}`
+            : '/img/no-img.jpg',
+        };
+      });
+
+      setFavoriteCryptos(cryptoData);
+    } catch (err) {
+      showToastMessage({
+        message: 'An Network error occurred, please try again',
+        type: 'error',
+      });
+    } finally {
+      setTimeout(() => finishLoading(), 1000);
+    }
   }
 
   function handleCryptoRemove(name?: string) {
-    const { 'crypto-search@cryptos': cryptosCookies } = parseCookies();
+    const cryptosOnCookies = getCookies('crypto-search@cryptos');
 
-    if (!name || !cryptosCookies) return;
+    if (!name || !cryptosOnCookies || cryptosOnCookies.length <= 0) return;
 
-    const parsedCryptos: CryptoData[] = JSON.parse(cryptosCookies);
-
-    if (parsedCryptos.length <= 0) return;
-
-    const filteredCryptos = parsedCryptos.filter(
+    const filteredCryptos = cryptosOnCookies.filter(
       (crypto) => crypto.name !== name,
     );
 
@@ -114,7 +115,7 @@ export function Dashboard() {
     return (
       <section className="flex-1 p-4 flex justify-center items-center flex-col">
         <div className="loader ease-linear rounded-full border-4 h-12 w-12"></div>
-        <p className="mt-4">Carregando...</p>
+        <p className="mt-4">Loading...</p>
       </section>
     );
   }
