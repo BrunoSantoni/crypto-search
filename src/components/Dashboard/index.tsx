@@ -43,6 +43,7 @@ export function Dashboard() {
         return;
       }
 
+      // Pegando os simbolos (BTC, 42) que o usuário salvou nos cookies para usar como query param na requisição
       const cryptosSymbols = cryptosOnCookies.map((crypto) => crypto.symbol);
 
       const { data } = await api.get(
@@ -57,8 +58,10 @@ export function Dashboard() {
         return;
       }
 
+      // Como a resposta da API não é um array, criei um array com a key de cada objeto para poder percorrer e manipular
       const responseKeys = Object.keys(allCryptos);
       const cryptoData = responseKeys.map((key) => {
+        // A chamada feita nesse arquivo não retorna o nome da moeda, para isso pegamos o nome dela nos cookies
         const cryptoName = cryptosOnCookies.find(
           (crypto) => crypto.symbol === key,
         );
@@ -75,7 +78,7 @@ export function Dashboard() {
       });
 
       setFavoriteCryptos(cryptoData);
-    } catch (err) {
+    } catch {
       showToastMessage({
         message: 'An Network error occurred, please try again',
         type: 'error',
@@ -85,6 +88,7 @@ export function Dashboard() {
     }
   }
 
+  // Recebe o nome da moeda a ser removida, faz uma busca por ela nos cookies e remove
   function handleCryptoRemove(name?: string) {
     const cryptosOnCookies = getCookies('crypto-search@cryptos');
 
@@ -108,6 +112,7 @@ export function Dashboard() {
       message: 'Crypto removed from track',
     });
 
+    // Chamo a função para atualizar os dados em tempo real na dashboard
     getApiData();
   }
 

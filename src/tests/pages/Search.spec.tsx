@@ -7,6 +7,7 @@ import {
 import { AppProvider } from '../../hooks';
 import SearchCrypto from '../../pages/search-crypto';
 
+// Forçando um retorno fake do Next Router
 jest.mock('next/router', () => {
   return {
     useRouter() {

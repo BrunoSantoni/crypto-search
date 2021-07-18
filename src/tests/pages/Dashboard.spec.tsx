@@ -7,6 +7,7 @@ import { AppProvider } from '../../hooks';
 import Dashboard from '../../pages';
 import * as cookiesHelper from 'utils/getCookies';
 
+// Forçando um retorno fake do Next Router
 jest.mock('next/router', () => {
   return {
     useRouter() {
@@ -17,6 +18,7 @@ jest.mock('next/router', () => {
   };
 });
 
+// Forçando um retorno fake dos cookies
 jest.spyOn(cookiesHelper, 'getCookies').mockReturnValueOnce([
   {
     id: '4321',

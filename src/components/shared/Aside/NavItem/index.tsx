@@ -17,6 +17,7 @@ export function NavItem({ icon, title, link }: NavItemProps) {
     isActive = true;
   }
 
+  // Caso seja o link selecionado atualmente, muda a estilização
   if (isActive) {
     return (
       <li className="flex items-center text-yellow-300 justify-center gap-1 text-lg translate-x-0 transition color duration-200 lg:text-xl">

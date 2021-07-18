@@ -91,10 +91,12 @@ utils             #Funções úteis e reaproveitáveis para chamar em
 
 # Comentários Adicionais
 
-1 - Comentei algumas funcionalidades principais do código para facilitar a compreensão, mas costumo tentar escrever os códigos da maneira mais descritível possível para que não seja necessário nem comentar para entender o código!
+1 - Como disse acima, sei que jamais devemos expor chaves de API na env, deixei a minha nesse caso específico apenas para facilitar na hora de testar.
 
-2 - Como mencionei acima, fiz apenas testes simples pois comecei a estudar testes recentemente;
+2 - Comentei algumas funcionalidades principais do código para facilitar a compreensão, mas costumo tentar escrever os códigos da maneira mais descritível possível para que não seja necessário nem comentar para entender o código!
 
-3 - Talvez criar um hook para o loading não seria a melhor abordagem, mas fiz para testar e mostrar um pouco mais do que já sei como fazer!
+3 - Como mencionei acima, fiz apenas testes simples pois comecei a estudar testes recentemente;
 
-4 - Limitei a exibição dos autocompletes em 12 itens para não pesar a página.
+4 - Talvez criar um hook para o loading não seria a melhor abordagem, mas fiz para testar e mostrar um pouco mais do que já sei como fazer!
+
+5 - Limitei a exibição dos autocompletes em 12 itens para não pesar a página.
