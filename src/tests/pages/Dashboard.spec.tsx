@@ -1,36 +1,41 @@
 import {
-  fireEvent,
   render,
   screen,
   waitForElementToBeRemoved,
 } from '@testing-library/react';
 import { AppProvider } from '../../hooks';
-import SearchCrypto from '../../pages/search-crypto';
+import Dashboard from '../../pages';
+import * as cookiesHelper from 'utils/getCookies';
 
 jest.mock('next/router', () => {
   return {
     useRouter() {
       return {
-        asPath: '/search-crypto',
+        asPath: '/',
       };
     },
   };
 });
 
-describe('Search page', () => {
-  it('should fetch Mocked API data, do the search and show the coins on screen', async () => {
+jest.spyOn(cookiesHelper, 'getCookies').mockReturnValueOnce([
+  {
+    id: '4321',
+    name: '42 Coin (42)',
+    symbol: '42',
+    image: 'https://www.cryptocompare.com//media/35650717/42.jpg',
+  },
+]);
+
+describe('Dashboard page', () => {
+  it('should fetch Mocked API data and show the coins tracked', async () => {
     const { container } = render(
       <AppProvider>
-        <SearchCrypto />
+        <Dashboard />
       </AppProvider>,
     );
 
     const loader = container.querySelector('.loader');
     await waitForElementToBeRemoved(loader);
-
-    const searchField = screen.getByPlaceholderText('Enter your search...');
-
-    fireEvent.change(searchField, { target: { value: '42' } });
 
     expect(await screen.findByText('42 Coin (42)')).toBeInTheDocument();
   });

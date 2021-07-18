@@ -43,8 +43,10 @@ export const handlers = [
             RAW: {
               '42': {
                 BRL: {
-                  PRICE: 200,
-                  CHANGEPCT24HOUR: 2.1,
+                  PRICE: 200.12,
+                  CHANGEDAY: 100.5,
+                  CHANGEPCTDAY: 0.3113710812129826,
+                  IMAGEURL: '/media/35650717/42.jpg',
                 },
               },
             },

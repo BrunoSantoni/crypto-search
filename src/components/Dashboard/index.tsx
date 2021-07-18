@@ -38,7 +38,7 @@ export function Dashboard() {
       const cryptosOnCookies = getCookies('crypto-search@cryptos');
 
       if (!cryptosOnCookies || cryptosOnCookies.length <= 0) {
-        setTimeout(() => finishLoading(), 1000);
+        finishLoading();
 
         return;
       }
@@ -52,7 +52,7 @@ export function Dashboard() {
       const allCryptos = data.RAW;
 
       if (!allCryptos) {
-        setTimeout(() => finishLoading(), 1000);
+        finishLoading();
 
         return;
       }
@@ -81,7 +81,7 @@ export function Dashboard() {
         type: 'error',
       });
     } finally {
-      setTimeout(() => finishLoading(), 1000);
+      finishLoading();
     }
   }
 
