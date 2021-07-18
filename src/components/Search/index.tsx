@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { api } from 'services/api';
 import { showToastMessage } from 'utils/showToastMessage';
 import { getCookies } from 'utils/getCookies';
+import { CryptoList } from './CryptoList';
 
 export function Search() {
   const [filteredCryptos, setFilteredCryptos] = useState<CryptoData[]>([]);
@@ -14,40 +15,40 @@ export function Search() {
   const { isLoading, startLoading, finishLoading } = useLoading();
 
   useEffect(() => {
-    async function getData() {
-      startLoading();
-
-      try {
-        const { data } = await api.get('/data/all/coinlist?summary=true');
-
-        const responseData = data.Data;
-
-        const responseKeys = Object.keys(responseData);
-
-        const cryptoData = responseKeys.map((key) => {
-          return {
-            id: responseData[key].Id,
-            name: responseData[key].FullName,
-            symbol: responseData[key].Symbol,
-            image: responseData[key].ImageUrl
-              ? `https://www.cryptocompare.com/${responseData[key].ImageUrl}`
-              : '/img/no-img.jpg',
-          };
-        });
-        setCryptos(cryptoData);
-        setFilteredCryptos(cryptoData.slice(0, 12));
-      } catch (err) {
-        showToastMessage({
-          message: 'An Network error occurred, please try again',
-          type: 'error',
-        });
-      } finally {
-        finishLoading();
-      }
-    }
-
-    getData();
+    getApiData();
   }, []);
+
+  async function getApiData() {
+    startLoading();
+
+    try {
+      const { data } = await api.get('/data/all/coinlist?summary=true');
+
+      const responseData = data.Data;
+
+      const responseKeys = Object.keys(responseData);
+
+      const cryptoData = responseKeys.map((key) => {
+        return {
+          id: responseData[key].Id,
+          name: responseData[key].FullName,
+          symbol: responseData[key].Symbol,
+          image: responseData[key].ImageUrl
+            ? `https://www.cryptocompare.com/${responseData[key].ImageUrl}`
+            : '/img/no-img.jpg',
+        };
+      });
+      setCryptos(cryptoData);
+      setFilteredCryptos(cryptoData.slice(0, 12));
+    } catch (err) {
+      showToastMessage({
+        message: 'An Network error occurred, please try again',
+        type: 'error',
+      });
+    } finally {
+      finishLoading();
+    }
+  }
 
   function handleCryptoSearch(e: ChangeEvent<HTMLInputElement>) {
     const keyword = e.target.value.toLowerCase().trim();
@@ -66,11 +67,11 @@ export function Search() {
   }
 
   function handleAddCrypto(filteredCrypto: CryptoData) {
-    let newCryptoInfo = [];
+    let newCryptoInfo: CryptoData[] = [];
 
     const cryptosOnCookies = getCookies('crypto-search@cryptos');
 
-    if (!cryptosOnCookies || cryptosOnCookies.length <= 0) {
+    if (!cryptosOnCookies || !cryptosOnCookies.length) {
       newCryptoInfo = [filteredCrypto];
 
       showToastMessage({
@@ -78,7 +79,7 @@ export function Search() {
         message: 'Crypto added to tracking',
       });
     } else {
-      const alreadySaved = cryptosOnCookies.find(
+      const alreadySaved = cryptosOnCookies.some(
         (crypto) => crypto.id === filteredCrypto.id,
       );
 
@@ -130,28 +131,19 @@ export function Search() {
       />
 
       <ul className="grid gap-16 grid-cols-2 mt-8 items-center justify-items-center md:grid-cols-3 lg:grid-cols-4">
-        {filteredCryptos.length > 0 ? (
+        {filteredCryptos.length > 0 &&
           filteredCryptos.map((filteredCrypto) => (
-            <li
+            <CryptoList
               key={filteredCrypto.id}
-              className="bg-transparent transition-bg duration-200 hover:bg-gray-100 p-4 rounded-md w-full text-center"
-            >
-              <button
-                className="w-full"
-                onClick={() => handleAddCrypto(filteredCrypto)}
-              >
-                <img
-                  width="60"
-                  height="60"
-                  className="m-auto mb-2"
-                  src={filteredCrypto.image}
-                  alt={filteredCrypto.name}
-                />
-                <span>{filteredCrypto.name}</span>
-              </button>
-            </li>
-          ))
-        ) : (
+              id={filteredCrypto.id}
+              image={filteredCrypto.image}
+              name={filteredCrypto.name}
+              symbol={filteredCrypto.symbol}
+              handleAddCrypto={() => handleAddCrypto(filteredCrypto)}
+            />
+          ))}
+
+        {filteredCryptos.length === 0 && (
           <li className="col-span-2 md:col-span-3 lg:col-span-4">
             <p className="text-center text-lg">No crypto found... =(</p>
           </li>

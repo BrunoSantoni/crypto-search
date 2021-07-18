@@ -1,12 +1,10 @@
 import { parseCookies } from 'nookies';
 import { CryptoData } from 'types/Crypto';
 
-export function getCookies(cookieKey: string): CryptoData[] | null {
+export function getCookies(cookieKey: string): CryptoData[] | undefined {
   const cookies = parseCookies();
 
-  if (!cookies[cookieKey]) {
-    return null;
+  if (cookies[cookieKey]) {
+    return JSON.parse(cookies[cookieKey]);
   }
-
-  return JSON.parse(cookies[cookieKey]);
 }

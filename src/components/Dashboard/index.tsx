@@ -1,27 +1,15 @@
 import { useEffect, useState } from 'react';
 import { setCookie } from 'nookies';
 import { api } from 'services/api';
-import { monetaryValue } from 'utils/monetaryValue';
-import { percentageValue } from 'utils/percentageValue';
-import { MdArrowDropDown, MdArrowDropUp } from 'react-icons/md';
-import { IoMdTrash } from 'react-icons/io';
 import { useLoading } from 'hooks/useLoading';
 import { showToastMessage } from 'utils/showToastMessage';
 import Link from 'next/link';
 import { getCookies } from 'utils/getCookies';
-
-type FavoriteCryptosData = {
-  name: string | undefined;
-  price: number;
-  variation: number;
-  variationPercentage: number;
-  image: string;
-};
+import { FavoriteCryptos } from 'types/FavoriteCryptos';
+import { FavoriteCrypto } from './FavoriteCrypto';
 
 export function Dashboard() {
-  const [favoriteCryptos, setFavoriteCryptos] = useState<FavoriteCryptosData[]>(
-    [],
-  );
+  const [favoriteCryptos, setFavoriteCryptos] = useState<FavoriteCryptos[]>([]);
 
   const { isLoading, startLoading, finishLoading } = useLoading();
 
@@ -37,13 +25,11 @@ export function Dashboard() {
 
       const cryptosOnCookies = getCookies('crypto-search@cryptos');
 
-      if (!cryptosOnCookies || cryptosOnCookies.length <= 0) {
-        finishLoading();
-
+      if (!cryptosOnCookies || !cryptosOnCookies.length) {
         return;
       }
 
-      // Pegando os simbolos (BTC, 42) que o usuário salvou nos cookies para usar como query param na requisição
+      // Pegando os simbolos (ex: BTC, 42) que o usuário salvou nos cookies para usar como query param na requisição
       const cryptosSymbols = cryptosOnCookies.map((crypto) => crypto.symbol);
 
       const { data } = await api.get(
@@ -53,14 +39,14 @@ export function Dashboard() {
       const allCryptos = data.RAW;
 
       if (!allCryptos) {
-        finishLoading();
-
         return;
       }
 
       // Como a resposta da API não é um array, criei um array com a key de cada objeto para poder percorrer e manipular
       const responseKeys = Object.keys(allCryptos);
       const cryptoData = responseKeys.map((key) => {
+        const crypto = allCryptos[key];
+
         // A chamada feita nesse arquivo não retorna o nome da moeda, para isso pegamos o nome dela nos cookies
         const cryptoName = cryptosOnCookies.find(
           (crypto) => crypto.symbol === key,
@@ -68,11 +54,11 @@ export function Dashboard() {
 
         return {
           name: cryptoName?.name,
-          price: allCryptos[key].BRL.PRICE,
-          variation: allCryptos[key].BRL.CHANGEDAY,
-          variationPercentage: allCryptos[key].BRL.CHANGEPCTDAY,
-          image: allCryptos[key].BRL.IMAGEURL
-            ? `https://www.cryptocompare.com/${allCryptos[key].BRL.IMAGEURL}`
+          price: crypto.BRL.PRICE,
+          variation: crypto.BRL.CHANGE24HOUR,
+          variationPercentage: crypto.BRL.CHANGEPCT24HOUR,
+          image: crypto.BRL.IMAGEURL
+            ? `https://www.cryptocompare.com/${crypto.BRL.IMAGEURL}`
             : '/img/no-img.jpg',
         };
       });
@@ -88,11 +74,10 @@ export function Dashboard() {
     }
   }
 
-  // Recebe o nome da moeda a ser removida, faz uma busca por ela nos cookies e remove
-  function handleCryptoRemove(name?: string) {
+  function handleCryptoRemove(name: string) {
     const cryptosOnCookies = getCookies('crypto-search@cryptos');
 
-    if (!name || !cryptosOnCookies || cryptosOnCookies.length <= 0) return;
+    if (!name || !cryptosOnCookies || !cryptosOnCookies.length) return;
 
     const filteredCryptos = cryptosOnCookies.filter(
       (crypto) => crypto.name !== name,
@@ -129,76 +114,28 @@ export function Dashboard() {
     <section className="flex-1 p-4">
       <h2 className="text-center text-2xl mb-2">Tracked Cryptocurrencies</h2>
 
-      {favoriteCryptos.length === 0 ? (
+      {favoriteCryptos.length === 0 && (
         <div className="text-blue-500 text-center text-lg">
           <span className="text-black">You are not tracking any crypto, </span>
           <Link href="/search-crypto">add some now</Link>
         </div>
-      ) : (
+      )}
+
+      {favoriteCryptos.length > 0 && (
         <ul className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
-          {favoriteCryptos.map((favoriteCrypto) => {
-            const isVariationNegative = favoriteCrypto.variation
-              .toString()
-              .includes('-');
-
-            return (
-              <li
-                key={favoriteCrypto.price}
-                className="bg-gray-100 w-auto flex gap-4 items-center justify-center rounded-md p-2 relative"
-              >
-                <button
-                  onClick={() => handleCryptoRemove(favoriteCrypto.name)}
-                  className="absolute right-4 top-4 text-red-700 transition-all transition-duration-200 hover:text-red-800"
-                >
-                  <IoMdTrash size={20} />
-                </button>
-                <picture>
-                  <img
-                    width="100"
-                    height="100"
-                    src={favoriteCrypto.image}
-                    alt="Imagem ilustrativa da moeda"
-                  />
-
-                  <p className="text-center mt-1">{favoriteCrypto.name}</p>
-                </picture>
-
-                <article className="coin-info">
-                  <div>
-                    <strong className="block">Price</strong>
-                    <span className="text-green-500">
-                      {monetaryValue(favoriteCrypto.price)}
-                    </span>
-                  </div>
-
-                  <div className="mt-2">
-                    <strong className="block">Last 24h</strong>
-
-                    <div className="flex items-center">
-                      {isVariationNegative ? (
-                        <MdArrowDropDown className="text-red-500" />
-                      ) : (
-                        <MdArrowDropUp className="text-green-500" />
-                      )}
-                      <span
-                        className={
-                          isVariationNegative
-                            ? 'text-red-500'
-                            : 'text-green-500'
-                        }
-                      >
-                        {monetaryValue(favoriteCrypto.variation)}
-
-                        <small className="ml-2">
-                          {percentageValue(favoriteCrypto.variationPercentage)}
-                        </small>
-                      </span>
-                    </div>
-                  </div>
-                </article>
-              </li>
-            );
-          })}
+          {favoriteCryptos.map(
+            ({ name, image, price, variation, variationPercentage }) => (
+              <FavoriteCrypto
+                key={name}
+                name={name}
+                image={image}
+                price={price}
+                variation={variation}
+                variationPercentage={variationPercentage}
+                handleCryptoRemove={() => handleCryptoRemove(name ? name : '')}
+              />
+            ),
+          )}
         </ul>
       )}
     </section>

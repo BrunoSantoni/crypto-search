@@ -23,7 +23,7 @@ A aplicação foi construída utilizando [Next.js](https://nextjs.org/docs/getti
 
 Para os estilos, foi utilizado o framework [Tailwind CSS](https://tailwindcss.com/) conforme requerido pelo desafio.
 
-Para os testes, foi utilizado o [Jest](https://jestjs.io/pt-BR/) e o [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/), as requisições foram *mockadas* com o [Mock Service Worker](https://mswjs.io/). **Obs: Fiz apenas testes simples pois comecei a estudar recentemente testes, portanto não tenho muita habilidade em fazê-los.**
+Para os testes, foi utilizado o [Jest](https://jestjs.io/pt-BR/) e o [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/), as requisições foram *mockadas* com o [Mock Service Worker](https://mswjs.io/).
 
 Para padronizar o código e manter a qualidade, foram utilizados, em conjunto: [Editor Config](https://editorconfig.org/), [Prettier](https://prettier.io/) e [ESLint](https://eslint.org/)
 
@@ -93,9 +93,9 @@ utils             #Funções úteis e reaproveitáveis para chamar em
 
 1 - Como disse acima, sei que jamais devemos expor chaves de API na env, deixei a minha nesse caso específico apenas para facilitar na hora de testar.
 
-2 - Comentei algumas funcionalidades principais do código para facilitar a compreensão, mas costumo tentar escrever os códigos da maneira mais descritível possível para que não seja necessário nem comentar para entender o código!
+2 - Na busca das moedas, passei um parâmetro ```summary=true``` na requisição, isso faz a API retornar menos dados e a requisição demorar bem menos, porém isso faz com que não seja possível pegar o parâmetro *IsTrading* que indica se uma moeda está sendo negociada ou não, assim, algumas moedas adicionadas não irão aparecer na Dashboard, pois não estão sendo negociadas. Porém, decidi manter desse jeito **excepcionalmente** para esse teste, pois optei pela velocidade e performance ao retornar os dados. Portanto, caso alguma moeda adicionada não apareça na dashboard, é porque ela não foi encontrada na requisição feita para coletar os dados das últimas 24h.
 
-3 - Como mencionei acima, fiz apenas testes simples pois comecei a estudar testes recentemente;
+3 - Comentei algumas funcionalidades principais do código para facilitar a compreensão, mas costumo tentar escrever os códigos da maneira mais descritível possível!
 
 4 - Talvez criar um hook para o loading não seria a melhor abordagem, mas fiz para testar e mostrar um pouco mais do que já sei como fazer!
 
