@@ -101,7 +101,7 @@ utils             #Funções úteis e reaproveitáveis para chamar em
 
 5 - Limitei a exibição dos autocompletes em 12 itens para não pesar a página.
 
-6 - A maior parte dos conceitos aplicados nesse teste, aprendi assistindo os cursos:
+6 - A maior parte dos conceitos aplicados nesse teste, aprendi pesquisando para fazer os projetos para trabalho/estudo e assistindo os cursos:
 
 [GoStack - Rocketseat](https://rocketseat.com.br/)
 
