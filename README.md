@@ -100,3 +100,11 @@ utils             #Funções úteis e reaproveitáveis para chamar em
 4 - Talvez criar um hook para o loading não seria a melhor abordagem, mas fiz para testar e mostrar um pouco mais do que já sei como fazer!
 
 5 - Limitei a exibição dos autocompletes em 12 itens para não pesar a página.
+
+6 - A maior parte dos conceitos aplicados nesse teste, aprendi assistindo os cursos:
+
+[GoStack - Rocketseat](https://rocketseat.com.br/)
+
+[Ignite - Rocketseat](https://rocketseat.com.br/)
+
+[React Avançado - Willian Justes / Guilherme Louro](https://reactavancado.com.br/)
